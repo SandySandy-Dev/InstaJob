@@ -47,22 +47,6 @@
     <header class="bg-blue-600 text-white shadow-md">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold">InstaJob</h1>
-            <nav class="space-x-6">
-                <a th:href="@{/}" class="nav-link">Home</a>
-                <span th:if="${session.user} != null">
-                    <span th:if="${session.user.userType} == 'recruiter'">
-                        <a th:href="@{/recruiter/dashboard}" class="nav-link">Dashboard</a>
-                    </span>
-                    <span th:if="${session.user.userType} == 'jobseeker'">
-                        <a th:href="@{/jobseeker/dashboard}" class="nav-link">Dashboard</a>
-                    </span>
-                    <a th:href="@{/logout}" class="nav-link">Logout</a>
-                </span>
-                <span th:unless="${session.user} != null">
-                    <a th:href="@{/login}" class="nav-link">Login</a>
-                    <a th:href="@{/register}" class="nav-link">Register</a>
-                </span>
-            </nav>
         </div>
     </header>
     

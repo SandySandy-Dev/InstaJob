@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>InstaJob - Post New Job</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for enhanced hover effects and animations */
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .nav-link {
+            transition: color 0.2s ease-in-out;
+            margin-right: 10px;
+        }
+        .nav-link:hover {
+            color: #60a5fa;
+        }
+        .btn-primary {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .form-section {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .alert {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">InstaJob</h1>
+            <nav class="space-x-6">
+                <a th:href="@{/}" class="nav-link">Home</a>
+                <span th:if="${session.user} != null">
+                    <span th:if="${session.user.userType} == 'recruiter'">
+                        <a th:href="@{/recruiter/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <span th:if="${session.user.userType} == 'jobseeker'">
+                        <a th:href="@{/jobseeker/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <a th:href="@{/logout}" class="nav-link">Logout</a>
+                </span>
+                <span th:unless="${session.user} != null">
+                    <a th:href="@{/login}" class="nav-link">Login</a>
+                    <a th:href="@{/register}" class="nav-link">Register</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 py-8">
+        <section class="form-section max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Post New Job</h2>
+            <div th:if="${message}" class="alert" th:text="${message}"></div>
+            <form th:action="@{/recruiter/post-job}" method="post">
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Job Title:</label>
+                    <input type="text" id="title" name="title" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Company:</label>
+                    <input type="text" id="company" name="company" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location:</label>
+                    <input type="text" id="location" name="location" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Job Description:</label>
+                    <textarea id="description" name="description" rows="5" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <button type="submit" class="btn-primary w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md">Post Job</button>
+            </form>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 InstaJob. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

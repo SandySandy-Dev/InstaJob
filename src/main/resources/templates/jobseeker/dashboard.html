@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>InstaJob - Job Seeker Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for enhanced hover effects and animations */
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .nav-link {
+            transition: color 0.2s ease-in-out;
+            margin-right: 10px;
+        }
+        .nav-link:hover {
+            color: #60a5fa;
+        }
+        .btn-primary {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .job-section {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .job-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">InstaJob</h1>
+            <nav class="space-x-6">
+                <a th:href="@{/}" class="nav-link">Home</a>
+                <span th:if="${session.user} != null">
+                    <span th:if="${session.user.userType} == 'recruiter'">
+                        <a th:href="@{/recruiter/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <span th:if="${session.user.userType} == 'jobseeker'">
+                        <a th:href="@{/jobseeker/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <a th:href="@{/logout}" class="nav-link">Logout</a>
+                </span>
+                <span th:unless="${session.user} != null">
+                    <a th:href="@{/login}" class="nav-link">Login</a>
+                    <a th:href="@{/register}" class="nav-link">Register</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <section class="job-section max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Find Jobs</h2>
+            <form th:action="@{/jobseeker/search-jobs}" method="get" class="mb-6 flex space-x-4">
+                <input type="text" name="keyword" placeholder="Search jobs..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="btn-primary px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md">Search</button>
+            </form>
+            
+            <a th:href="@{/jobseeker/my-applications}" class="btn-primary inline-block px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md mb-6">View My Applications</a>
+            
+            <div th:if="${jobs.empty}" class="text-gray-600 text-center">
+                <p>No jobs found.</p>
+            </div>
+            
+            <div th:unless="${jobs.empty}" class="job-list space-y-4">
+                <div class="job-card bg-gray-50 border border-gray-200 rounded-md p-4" th:each="job : ${jobs}">
+                    <h3 class="text-lg font-semibold text-gray-800" th:text="${job.title}"></h3>
+                    <p class="text-gray-600" th:text="${job.company}"></p>
+                    <p class="text-gray-600" th:text="${job.location}"></p>
+                    <p class="text-gray-600 mb-4" th:text="${job.description}"></p>
+                    <a th:href="@{'/jobseeker/apply/' + ${job.id}}" class="btn-primary inline-block px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md">Apply Now</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 InstaJob. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

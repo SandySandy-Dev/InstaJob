@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>InstaJob - Recruiter Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for enhanced hover effects and animations */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .nav-link {
+            transition: color 0.2s ease-in-out;
+            margin-right: 10px;
+        }
+        .nav-link:hover {
+            color: #60a5fa;
+        }
+        .btn-primary {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .btn-danger {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+        }
+        .job-section {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        .job-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">InstaJob</h1>
+            <nav class="space-x-6">
+                <a th:href="@{/}" class="nav-link">Home</a>
+                <span th:if="${session.user} != null">
+                    <span th:if="${session.user.userType} == 'recruiter'">
+                        <a th:href="@{/recruiter/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <span th:if="${session.user.userType} == 'jobseeker'">
+                        <a th:href="@{/jobseeker/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <a th:href="@{/logout}" class="nav-link">Logout</a>
+                </span>
+                <span th:unless="${session.user} != null">
+                    <a th:href="@{/login}" class="nav-link">Login</a>
+                    <a th:href="@{/register}" class="nav-link">Register</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 py-8">
+        <section class="job-section max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Your Posted Jobs</h2>
+                <a th:href="@{/recruiter/post-job}" class="btn-primary px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md">Post New Job</a>
+            </div>
+            
+            <div th:if="${jobs.empty}" class="text-center text-gray-600">
+                <p>You haven't posted any jobs yet.</p>
+            </div>
+            
+            <div th:unless="${jobs.empty}" class="space-y-4">
+                <div class="job-card bg-gray-50 rounded-md p-4" th:each="job : ${jobs}">
+                    <h3 class="text-lg font-semibold text-gray-800" th:text="${job.title}"></h3>
+                    <p class="text-gray-600" th:text="${job.company}"></p>
+                    <p class="text-gray-600" th:text="${job.location}"></p>
+                    <p class="text-gray-600" th:text="${job.description}"></p>
+                    <div class="job-actions flex space-x-2 mt-3">
+                        <a th:href="@{'/recruiter/edit-job/' + ${job.id}}" class="btn-primary px-3 py-1 bg-blue-600 text-white rounded-md shadow-sm">Edit</a>
+                        <a th:href="@{'/recruiter/delete-job/' + ${job.id}}" class="btn-danger px-3 py-1 bg-red-600 text-white rounded-md shadow-sm">Delete</a>
+                        <a th:href="@{'/recruiter/view-applicants/' + ${job.id}}" class="btn-primary px-3 py-1 bg-blue-600 text-white rounded-md shadow-sm">
+                            View Applicants (<span th:text="${job.applications != null ? job.applications.size() : 0}"></span>)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 InstaJob. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

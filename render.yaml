@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: linkedin-clone
+    runtime: java
+    buildCommand: ./mvnw clean package
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SPRING_DATA_MONGODB_URI
+        fromDatabase:
+          name: mongodb-atlas
+          property: connectionString

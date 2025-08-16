@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>InstaJob - View Applicants</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for enhanced hover effects and animations */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .nav-link {
+            transition: color 0.2s ease-in-out;
+            margin-right: 10px;
+        }
+        .nav-link:hover {
+            color: #60a5fa;
+        }
+        .btn-primary {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .applicant-section {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+        .applicant-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .applicant-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .applicant-links a {
+            transition: color 0.2s ease-in-out;
+        }
+        .applicant-links a:hover {
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">InstaJob</h1>
+            <nav class="space-x-6">
+                <a th:href="@{/}" class="nav-link">Home</a>
+                <span th:if="${session.user} != null">
+                    <span th:if="${session.user.userType} == 'recruiter'">
+                        <a th:href="@{/recruiter/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <span th:if="${session.user.userType} == 'jobseeker'">
+                        <a th:href="@{/jobseeker/dashboard}" class="nav-link">Dashboard</a>
+                    </span>
+                    <a th:href="@{/logout}" class="nav-link">Logout</a>
+                </span>
+                <span th:unless="${session.user} != null">
+                    <a th:href="@{/login}" class="nav-link">Login</a>
+                    <a th:href="@{/register}" class="nav-link">Register</a>
+                </span>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 py-8">
+        <section class="applicant-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Applicants for <span th:text="${job.title}"></span></h2>
+            <div th:if="${error}" class="error" th:text="${error}"></div>
+            <div th:if="${job.applications == null or job.applications.empty}" class="text-center text-gray-600">
+                <p>No applicants yet.</p>
+            </div>
+            <div th:unless="${job.applications == null or job.applications.empty}" class="space-y-6">
+                <div class="applicant-card bg-white rounded-lg shadow-md p-6" th:each="app : ${job.applications}">
+                    <h3 class="text-xl font-semibold text-blue-600 mb-4" th:text="${app.jobSeekerName} ?: 'Unknown Applicant'"></h3>
+                    <div class="applicant-info mb-4">
+                        <p><strong>Applied on:</strong> <span th:text="${app.appliedDate} ?: 'Date not available'"></span></p>
+                        <p><strong>Status:</strong> <span th:text="${app.status} ?: 'Status not set'"></span></p>
+                        <p><strong>Mobile:</strong> <span th:text="${app.mobileNumber} ?: 'N/A'"></span></p>
+                    </div>
+                    <div class="applicant-info mb-4">
+                        <h4 class="text-lg font-medium text-gray-700">Introduction:</h4>
+                        <p class="text-gray-600" th:text="${app.introduction} ?: 'No introduction provided'"></p>
+                    </div>
+                    <div class="applicant-info mb-4">
+                        <h4 class="text-lg font-medium text-gray-700">Why Join Us:</h4>
+                        <p class="text-gray-600" th:text="${app.whyJoinUs} ?: 'No reason provided'"></p>
+                    </div>
+                    <div class="applicant-links">
+                        <h4 class="text-lg font-medium text-gray-700">Links:</h4>
+                        <p class="text-gray-600">
+                            <span th:if="${not #strings.isEmpty(app.githubLink)}">
+                                <strong>GitHub:</strong> <a th:href="${app.githubLink}" target="_blank" class="text-blue-600 hover:underline" th:text="${app.githubLink}"></a><br />
+                            </span>
+                            <span th:if="${not #strings.isEmpty(app.linkedinLink)}">
+                                <strong>LinkedIn:</strong> <a th:href="${app.linkedinLink}" target="_blank" class="text-blue-600 hover:underline" th:text="${app.linkedinLink}"></a><br />
+                            </span>
+                            <span th:if="${not #strings.isEmpty(app.portfolioLink)}">
+                                <strong>Portfolio:</strong> <a th:href="${app.portfolioLink}" target="_blank" class="text-blue-600 hover:underline" th:text="${app.portfolioLink}"></a>
+                            </span>
+                            <span th:if="${#strings.isEmpty(app.githubLink) and #strings.isEmpty(app.linkedinLink) and #strings.isEmpty(app.portfolioLink)}">
+                                No links provided
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 InstaJob. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
